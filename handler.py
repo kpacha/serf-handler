@@ -2,8 +2,11 @@
 
 import os
 import logging
+import members
+import json
 
-# This module is based on the 'serf-master' project (https://github.com/garethr/serf-master)
+
+# This class is based on the 'serf-master' project (https://github.com/garethr/serf-master)
 class SerfHandler(object):
     def __init__(self):
         self.name = os.environ['SERF_SELF_NAME']
@@ -21,6 +24,52 @@ class SerfHandler(object):
         self.logger.info(message)
 
 
+class ConsumerHandler(SerfHandler):
+    def __init__(self, observed, configDir):
+        super(ConsumerHandler, self).__init__()
+        self.observed = observed
+        self.configDir = configDir
+
+    def handleMembershipChange(self):
+        members_handler = members.Members(self.configDir)
+        members_handler.run()
+
+    def member_join(self, payload):
+        # self.log("NEW MEMBER HAS JOINED THE PARTY! " + payload)
+        self.handleMembershipChange()
+
+    def member_update(self, payload):
+        # self.log("A MEMBER HAS UPDATED ITS STATE! " + payload)
+        self.handleMembershipChange()
+
+    def member_leave(self, payload):
+        # self.log("A MEMBER HAS LEAVE THE PARTY! " + payload)
+        self.handleMembershipChange()
+
+    def member_failed(self, payload):
+        # self.log("A MEMBER HAS FAILED! " + payload)
+        self.handleMembershipChange()
+
+
+class ConfigHandler(SerfHandler):
+    def __init__(self):
+        super(ConfigHandler, self).__init__()
+        self.suscribed = (os.environ['SERF_TAG_PRODUCTS']).split(":")
+
+    def config_updated(self, payload):
+        newConfig = json.loads(payload)
+        productName = newConfig["p"]
+        if productName in self.suscribed:
+            # check config version (reading the current content of the config involved)
+            # and if it's newer, update it, The config is at p/k.json (where p and k are properties of
+            # the newConfig dict).
+            self.log("ladies & gentlemen, update your configs with: " + str(newConfig) + " total: " + str(len(payload)))
+            print "ok"
+        else:
+            self.log("ignoring config changes")
+
+
+# This class is based on the 'serf-master' project (https://github.com/garethr/serf-master)
 class SerfHandlerProxy(SerfHandler):
 
     def __init__(self):
