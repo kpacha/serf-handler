@@ -5,7 +5,7 @@ naive integration layer for building service-discovery systems on top of [serf](
 
 also, it would handle `config_update` events/queries so you could extend it and integrate a distribution layer for your configuration service.
 
-Note: the handler module is almost a copy of [serf-master](https://github.com/garethr/serf-master)
+Note: the SerfHandler and SerfHandlerProxy are almost a copy of [serf-master](https://github.com/garethr/serf-master)
 
 ##Assumptions
 
@@ -21,7 +21,7 @@ There are some assumptions about the system that are already made:
 
 - Checkout the repo.
 - Configure your serf agents so they use the `tags` feature to expose the products and services they handle (and the port of each one).
-- Create your rode catalogue by extending the base handlers (`SerfHandler`, `ConsumerHandler` and `ConfigHandler`).
+- Create your rode catalogue by importing the `handler` module and extending the base handlers (`SerfHandler`, `ConsumerHandler` and `ConfigHandler`).
 - Create the entry point with your node definition or just edit the `event_hanlder.py` script. This script must register all the roles and handlers.
 - Set the entry point created on the previous step as your main serf event handler.
 - Start serf.
@@ -31,6 +31,8 @@ Check the fixtures/serf_agent_config.json for an example of serf agent configura
 The files in the `conf` dir will be updated after every change in the cluster, so your apps could use them to discover products, services and nodes.
 
 For a `/etc/hosts` based service discovery, you could just use a cron to move the `conf/fakedhosts.txt` file to `/etc/hosts`.
+
+If you don't want to react to every event your agent receives, you could just create a cron to run the `members.py` every few seconds. This script asks serf for the membership table and, if it has changed, it updates the `conf/fakedhosts.txt`, `conf/services.yml` and `conf/services.json` files
 
 ###configuration service
 
