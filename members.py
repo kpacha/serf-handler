@@ -13,6 +13,9 @@ class Members(object):
 	def log(self, msg):
 		self.logger.info(msg)
 
+	def trace(self, product):
+		self.logger.debug(product)
+
 	def getMemberTable(self):
 		self.log("Parsing the members table")
 		handle = os.popen("serf members -format=json")
@@ -39,6 +42,7 @@ class Members(object):
 
 	def render(self, products):
 		self.log("Writing new config files...")
+		self.trace(str(products))
 		cfp = open("/tmp/services_updating.json", "w")
 		hfp = open("/tmp/fakehosts_updating.txt", "w")
 		sfp = open("/tmp/services_updating.yml", "w")
