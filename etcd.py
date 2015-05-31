@@ -23,5 +23,8 @@ class EtcdClient(object):
 
 
 if __name__ == '__main__':
+	logging.basicConfig(filename='/tmp/serf_etcd_client.log',
+		format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+		datefmt='%Y/%m/%d %H:%M:%S', level=logging.DEBUG)
 	client = EtcdClient()
 	client.handle()
