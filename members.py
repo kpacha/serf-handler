@@ -16,7 +16,7 @@ class Members(object):
 	def getMemberTable(self):
 		self.log("Parsing the members table")
 		# handle = os.popen("serf members -format=json")
-		handle = os.popen("cat serf_members_fake.json")
+		handle = os.popen("cat fixtures/serf_members_fake.json")
 		members = json.load(handle)
 		return members["members"]
 		
