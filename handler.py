@@ -62,26 +62,29 @@ class ConfigHandler(SerfHandler):
         productName = newConfig["p"]
         if productName in self.suscribed:
             configFile = "%s%s/%s.json" % (self.configDir, productName, newConfig["k"])
+            receivedVersion = int(newConfig["v"])
             fp = open(configFile, "r")
             isNew = False
             try:
-                stored = json.loads(fp)
-                isNew = stored["_version"] < newConfig["v"]
+                stored = json.load(fp)
+                isNew = stored["_version"] < receivedVersion
             except:
                 isNew = True
             fp.close()
             if isNew:
                 config = newConfig["c"]
-                config["_version"] = newConfig["v"]
+                config["_version"] = receivedVersion
                 tmpFile = "/tmp/%s_%s.json" % (productName, newConfig["k"])
                 fp = open(tmpFile, "w")
                 print>>fp, json.dumps(config, sort_keys=True, indent=4, separators=(',', ': '))
                 fp.close()
                 os.system("mv %s %s" % (tmpFile, configFile))
                 self.log("configs update with: " + str(config))
-                print "ok"
+            else:
+                self.log("ignoring config changes: old version")
+            print "ok"
         else:
-            self.log("ignoring config changes")
+            self.log("ignoring config changes: not interested in")
 
 
 # This class is based on the 'serf-master' project (https://github.com/garethr/serf-master)
