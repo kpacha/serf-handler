@@ -21,5 +21,5 @@ if __name__ == '__main__':
     handler = SerfHandlerProxy()
     handler.register('web', WebHandler(['product2', 'product3'], "conf/"))
     handler.register('mysql', DatabaseHandler())
-    handler.register('default', ConfigHandler())
+    handler.register('default', ConfigHandler("conf/"))
     handler.run(sys.stdin)

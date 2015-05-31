@@ -52,19 +52,30 @@ class ConsumerHandler(SerfHandler):
 
 
 class ConfigHandler(SerfHandler):
-    def __init__(self):
+    def __init__(self, configDir):
         super(ConfigHandler, self).__init__()
         self.suscribed = (os.environ['SERF_TAG_PRODUCTS']).split(":")
+        self.configDir = configDir
 
     def config_updated(self, payload):
         newConfig = json.loads(payload)
         productName = newConfig["p"]
         if productName in self.suscribed:
-            # check config version (reading the current content of the config involved)
-            # and if it's newer, update it, The config is at p/k.json (where p and k are properties of
-            # the newConfig dict).
-            self.log("ladies & gentlemen, update your configs with: " + str(newConfig) + " total: " + str(len(payload)))
-            print "ok"
+            fp = open("%s%s/%s.json" % (self.configDir, newConfig["p"], newConfig["k"]), "r+")
+            isNew = False
+            try:
+                stored = json.loads(fp)
+                isNew = stored["_version"] < newConfig["v"]
+            except:
+                isNew = True
+            if isNew:
+                config = newConfig["c"]
+                config["_version"] = newConfig["v"]
+                fp.seek(0)
+                print>>fp, json.dumps(config, sort_keys=True, indent=4, separators=(',', ': '))
+                self.log("configs update with: " + str(config))
+                print "ok"
+            fp.close()
         else:
             self.log("ignoring config changes")
 

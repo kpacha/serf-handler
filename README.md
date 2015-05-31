@@ -75,3 +75,13 @@ In order to allow you to properly handle the configuration updates, the `config_
 ```
 
 Where `p` is the name of the product, `k` is the key of the config been updated, `v` is the version of the change and `c` is the piece of configuration that has been updated.
+
+After receiving the `config_update` message, the nodes interested in the piece of config changed, if their stored version is older than the received one, will update the related config file. Every piece of configuration is stored in a directory named like the product the config is about and in a json file. The name of that file will be the key of the piece of configuration. For example, the previous payload would be stored at `/path/to/your/configs/product1/security.json` as
+
+```
+{
+    "_version": 12,
+    "user": "myUser",
+    "pass": "mySecret"
+}
+```
