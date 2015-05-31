@@ -3,7 +3,7 @@ serf-handler
 
 naive integration layer for building service-discovery systems on top of [serf](http://serfdom.io).
 
-also, it can handle `config_update` events/queries so you could use it as a distribution layer for your configuration service (currently, there is a simple module for integration with etcd).
+also, it can handle `config_update` events/queries so you could use it as a distribution layer for your configuration service (currently, there is a simple module for integration with [etcd](https://github.com/coreos/etcd)).
 
 Note: the SerfHandler and SerfHandlerProxy are almost a copy of [serf-master](https://github.com/garethr/serf-master)
 
@@ -41,7 +41,7 @@ Send events or queries with a json payload. The payload has some restictions:
 - size: the string size must be less than 512 bytes
 - structure: the serialiazed object must have a concrete structure. Check the *config_update* event section
 
-Currently, there is just one configuration service 'supported': (etcd)[https://github.com/coreos/etcd]. In order to watch for changes and propagate them to the serf cluster, install a serf agent (with no role) on every etcd coordinator and link the `etcd.py` module to the `etcdctl exec-watch` tool:
+Currently, there is just one configuration service 'supported': [etcd](https://github.com/coreos/etcd). In order to watch for changes and propagate them to the serf cluster, install a serf agent (with no role) on every etcd coordinator and link the `etcd.py` module to the `etcdctl exec-watch` tool:
 
 ```
 $ etcdctl exec-watch --recursive / -- sh -c "python etcd.py"
