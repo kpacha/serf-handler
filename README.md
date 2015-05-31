@@ -41,6 +41,21 @@ Send events or queries with a json payload. The payload has some restictions:
 - size: the string size must be less than 512 bytes
 - structure: the serialiazed object must have a concrete structure. Check the *config_update* event section
 
+Currently, there is just one configuration service 'supported': etcd. In order to watch for changes and propagate them to the serf cluster, install a serf agent on every etcd coordinator and link the `etcd.py` module to the `etcdctl exec-watch` tool
+
+```
+$ etcdctl exec-watch --recursive / -- sh -c "python etcd.py"
+propagated
+ignored
+propagated
+```
+
+Also, you can test the script by just setting the required environmental variables before calling it
+
+```
+$ ETCD_WATCH_ACTION=set ETCD_WATCH_KEY=/product1/security ETCD_WATCH_MODIFIED_INDEX=1 ETCD_WATCH_VALUE='{"user":"test","pass":"secret","pin":1234,"enabled":true}' python etcd.py
+```
+
 Event:
 
 ```
