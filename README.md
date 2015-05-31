@@ -11,7 +11,7 @@ Note: the SerfHandler and SerfHandlerProxy are almost a copy of [serf-master](ht
 
 There are some assumptions about the system that are already made:
 
-- apps will handle communication failures, so it's ok to work with eventually consistent data (that's why you are using serf, is,t it?).
+- apps will handle communication failures, so it's ok to work with eventually consistent data (that's why you are using serf, isn't it?).
 - apps could rely on dns to communicate, so the easiest way to support this pattern is by editing the `/etc/hosts` file.
 - apps could rely on config files to discover other services, so the info must be parsed in several standards (for now, those are json and yaml).
 
