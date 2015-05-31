@@ -17,14 +17,16 @@ There are some assumptions about the system that are already made:
 
 ##Usage
 
-###Service discovery
-
 - Checkout the repo.
 - Configure your serf agents so they use the `tags` feature to expose the products and services they handle (and the port of each one). The role tag is a list of all different service types a node is serving.
-- Create your rode catalogue by importing the `handler` module and extending the base handlers (`SerfHandler`, `ConsumerHandler` and `ConfigHandler`).
+- Create your rode catalogue by importing the `handler` module and extending the base handlers (`SerfHandler`, `ConsumerHandler` and `ConfigHandler`, depnding on the type of system you want to implement).
 - Create the entry point with your node definition or just edit the `event_hanlder.py` script. This script must register all the roles and handlers.
 - Set the entry point created on the previous step as your main serf event handler.
 - Start serf.
+
+###Service discovery
+
+Create and register role handlers based on the `ConsumerHandler` if you want to use the regular service discovery features or create your own handler extendig the `SerfHandler` if you want more freedom.
 
 Check the [fixtures/serf_agent_config.json](https://github.com/kpacha/serf-handler/blob/master/fixtures/serf_agent_config.json) for an example of a regular serf agent configuration. *Note that, due a limitation in serf, ports must be defined as strings.*
 
@@ -35,6 +37,8 @@ For a `/etc/hosts` based service discovery, you could just use a cron to move th
 If you don't want to react to every event your agent receives, you could just create a cron to run the `members.py` every few seconds. This script asks serf for the membership table and, if it has changed, it updates the `conf/fakedhosts.txt`, `conf/services.yml` and `conf/services.json` files
 
 ###Configuration service
+
+Regiter a role with a handler extending the `ConfigHandler`in order to use the serf layer as a deliver system for your confguration sync. The easiest way is to bind this handler to the `default` role (as in the defualt [`event_handler.py`](https://github.com/kpacha/serf-handler/blob/master/event_handler.py)).
 
 Send `config_updated` events or queries with a json payload to notify your cluster that some piece of configuration has changed. The payload has some restictions:
 
