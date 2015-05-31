@@ -61,21 +61,25 @@ class ConfigHandler(SerfHandler):
         newConfig = json.loads(payload)
         productName = newConfig["p"]
         if productName in self.suscribed:
-            fp = open("%s%s/%s.json" % (self.configDir, newConfig["p"], newConfig["k"]), "r+")
+            configFile = "%s%s/%s.json" % (self.configDir, productName, newConfig["k"])
+            fp = open(configFile, "r")
             isNew = False
             try:
                 stored = json.loads(fp)
                 isNew = stored["_version"] < newConfig["v"]
             except:
                 isNew = True
+            fp.close()
             if isNew:
                 config = newConfig["c"]
                 config["_version"] = newConfig["v"]
-                fp.seek(0)
+                tmpFile = "/tmp/%s_%s.json" % (productName, newConfig["k"])
+                fp = open(tmpFile, "w")
                 print>>fp, json.dumps(config, sort_keys=True, indent=4, separators=(',', ': '))
+                fp.close()
+                os.system("mv %s %s" % (tmpFile, configFile))
                 self.log("configs update with: " + str(config))
                 print "ok"
-            fp.close()
         else:
             self.log("ignoring config changes")
 
