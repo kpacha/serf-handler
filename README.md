@@ -11,7 +11,7 @@ Note: the SerfHandler and SerfHandlerProxy are almost a copy of [serf-master](ht
 
 There are some assumptions about the system that are already made:
 
-- apps will handle communication failures, so it's ok to work with eventually consistent data.
+- apps will handle communication failures, so it's ok to work with eventually consistent data (that's why you are using serf, is,t it?).
 - apps could rely on dns to communicate, so the easiest way to support this pattern is by editing the `/etc/hosts` file.
 - apps could rely on config files to discover other services, so the info must be parsed in several standards (for now, those are json and yaml).
 
@@ -20,7 +20,7 @@ There are some assumptions about the system that are already made:
 ###Service discovery
 
 - Checkout the repo.
-- Configure your serf agents so they use the `tags` feature to expose the products and services they handle (and the port of each one).
+- Configure your serf agents so they use the `tags` feature to expose the products and services they handle (and the port of each one). The role tag is a list of all different service types a node is serving.
 - Create your rode catalogue by importing the `handler` module and extending the base handlers (`SerfHandler`, `ConsumerHandler` and `ConfigHandler`).
 - Create the entry point with your node definition or just edit the `event_hanlder.py` script. This script must register all the roles and handlers.
 - Set the entry point created on the previous step as your main serf event handler.
@@ -34,7 +34,7 @@ For a `/etc/hosts` based service discovery, you could just use a cron to move th
 
 If you don't want to react to every event your agent receives, you could just create a cron to run the `members.py` every few seconds. This script asks serf for the membership table and, if it has changed, it updates the `conf/fakedhosts.txt`, `conf/services.yml` and `conf/services.json` files
 
-###configuration service
+###Configuration service
 
 Send events or queries with a json payload. The payload has some restictions:
 
@@ -58,7 +58,7 @@ $ serf query -format=json -tag products=.*product1.* config_updated '{"p":"produ
 
 Choosing between sending an event or a query could depend on the frequency your configuration changes and the scope of the change.
 
-# The `config_update` protocol
+##The `config_update` protocol
 
 In order to allow you to properly handle the configuration updates, the `config_update` payloads must have this structure:
 
