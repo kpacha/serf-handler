@@ -1,0 +1,15 @@
+{
+"tags": {
+	"role": "web:mysql:memcached",
+	"products": "product1:product2",
+	"product1.service_type": "mysql:web",
+	"product1.mysql.service_port": "3306",
+	"product1.web.service_port": "80",
+	"product2.service_type": "web:memcached",
+	"product2.web.service_port": "80",
+	"product2.memcached.service_port": "11211"
+	},
+"event_handlers": [
+    "python event_handler.py"
+  ]
+}

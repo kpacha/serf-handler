@@ -1,0 +1,237 @@
+{
+  "members": [
+	{
+		"name": "test0",
+		"addr": "192.168.1.33:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product1",
+			"role": "memcached:public",
+			"product1.service_type": "memcached:public",
+			"product1.memcached.service_port": "11211",
+			"product1.public.service_port": "80"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test1",
+		"addr": "192.168.1.34:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product1",
+			"role": "memcached:public",
+			"product1.service_type": "memcached:public",
+			"product1.memcached.service_port": "11211",
+			"product1.public.service_port": "80"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test2",
+		"addr": "192.168.1.35:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product1",
+			"role": "memcached:public",
+			"product1.service_type": "memcached:public",
+			"product1.memcached.service_port": "11211",
+			"product1.public.service_port": "80"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test3",
+		"addr": "192.168.1.36:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product1",
+			"role": "memcached:web",
+			"product1.service_type": "memcached:web",
+			"product1.memcached.service_port": "11211",
+			"product1.web.service_port": "8080"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test4",
+		"addr": "192.168.1.37:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product1",
+			"role": "web",
+			"product1.service_type": "web",
+			"product1.web.service_port": "8080"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test5",
+		"addr": "192.168.1.38:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product1",
+			"role": "web",
+			"product1.service_type": "web",
+			"product1.web.service_port": "8080"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test6",
+		"addr": "192.168.1.134:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product2",
+			"role": "myslq-slave",
+			"product2.service_type": "myslq-slave",
+			"product2.myslq-slave.service_port": "3306"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test7",
+		"addr": "192.168.1.135:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product2",
+			"role": "myslq-slave",
+			"product2.service_type": "myslq-slave",
+			"product2.myslq-slave.service_port": "3306"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test8",
+		"addr": "192.168.1.139:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product1:product2",
+			"role": "myslq-master",
+			"product1.service_type": "myslq-master",
+			"product1.myslq-master.service_port": "3306",
+			"product2.service_type": "myslq-master",
+			"product2.myslq-master.service_port": "3306"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test9",
+		"addr": "192.168.1.136:7946",
+		"port": 7946,
+		"tags": {
+			"products": "product2",
+			"role": "public",
+			"product2.service_type": "public",
+			"product2.public.service_port": "80"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test10",
+		"addr": "192.168.1.236:7946",
+		"port": 7946,
+		"tags": {
+			"role": "web",
+			"products": "product1:product2",
+			"product1.service_type": "web",
+			"product1.web.service_port": "8080",
+			"product2.service_type": "web",
+			"product2.web.service_port": "8081"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "failed",
+		"addr": "192.168.1.236:7946",
+		"port": 7946,
+		"tags": {
+			"role": "public",
+			"products": "product2",
+			"product2.service_type": "public",
+			"product2.public.service_port": "80"
+		},
+		"status": "failed",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test11",
+		"addr": "192.168.1.246:7946",
+		"port": 7946,
+		"tags": {
+			"role": "public",
+			"products": "product2:product1:product3",
+			"product2.service_type": "public",
+			"product2.public.service_port": "80",
+			"product3.service_type": "public",
+			"product3.public.service_port": "80",
+			"product1.service_type": "public",
+			"product1.public.service_port": "80"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	}
+]
+}

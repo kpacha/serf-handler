@@ -1,0 +1,72 @@
+product3 :
+    public :
+        - name : test11
+          port : 80
+          addr : 192.168.1.246
+product2 :
+    public :
+        - name : test9
+          port : 80
+          addr : 192.168.1.136
+        - name : test11
+          port : 80
+          addr : 192.168.1.246
+    web :
+        - name : test10
+          port : 8081
+          addr : 192.168.1.236
+    myslq-slave :
+        - name : test6
+          port : 3306
+          addr : 192.168.1.134
+        - name : test7
+          port : 3306
+          addr : 192.168.1.135
+    myslq-master :
+        - name : test8
+          port : 3306
+          addr : 192.168.1.139
+product1 :
+    web :
+        - name : test3
+          port : 8080
+          addr : 192.168.1.36
+        - name : test4
+          port : 8080
+          addr : 192.168.1.37
+        - name : test5
+          port : 8080
+          addr : 192.168.1.38
+        - name : test10
+          port : 8080
+          addr : 192.168.1.236
+    memcached :
+        - name : test0
+          port : 11211
+          addr : 192.168.1.33
+        - name : test1
+          port : 11211
+          addr : 192.168.1.34
+        - name : test2
+          port : 11211
+          addr : 192.168.1.35
+        - name : test3
+          port : 11211
+          addr : 192.168.1.36
+    public :
+        - name : test0
+          port : 80
+          addr : 192.168.1.33
+        - name : test1
+          port : 80
+          addr : 192.168.1.34
+        - name : test2
+          port : 80
+          addr : 192.168.1.35
+        - name : test11
+          port : 80
+          addr : 192.168.1.246
+    myslq-master :
+        - name : test8
+          port : 3306
+          addr : 192.168.1.139
