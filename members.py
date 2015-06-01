@@ -64,7 +64,7 @@ class Members(Base):
 		members = json.load(handle)
 		return members["members"]
 
-	def parseMemberTable(self, members):
+	def parseMemberTable(self, members, suscribed, observed):
 		products = {}
 		for member in members:
 			if (member["status"] == "alive"):
@@ -72,13 +72,17 @@ class Members(Base):
 				name = member["name"]
 				productsInNode = member["tags"]["products"].split(":")
 				for p in productsInNode:
-					product = products.get(p, {})
-					services = member["tags"][p + ".service_type"].split(":")
-					for s in services:
-						nodes = product.get(s, [])
-						nodes.append({ 'addr' : host[0], 'port' : int(member["tags"][p + "." + s + ".service_port"]), 'name' : name })
-						product[s] = nodes
-					products[p] = product
+					if p in (suscribed + observed):
+						product = products.get(p, {})
+						services = member["tags"][p + ".service_type"].split(":")
+						for s in services:
+							if p not in suscribed:
+								if s != "public":
+									continue
+							nodes = product.get(s, [])
+							nodes.append({ 'addr' : host[0], 'port' : int(member["tags"][p + "." + s + ".service_port"]), 'name' : name })
+							product[s] = nodes
+						products[p] = product
 		return products
 
 	def update(self, products):
@@ -97,18 +101,9 @@ class Members(Base):
 			self.log("Nothing to update")
 		return products
 
-	def filterCatalogue(self, catalogue, suscribed, observed):
-		products = { p: catalogue[p] for p in suscribed }
-		for p in observed:
-			if p in catalogue:
-				if "public" in catalogue[p]:
-					products[p] = { "public": catalogue[p]["public"] }
-		return products
-
-
 	def run(self, suscribed, observed):
 		self.log("Checking the membership table")
-		products = self.filterCatalogue(self.parseMemberTable(self.getMemberTable()), suscribed, observed)
+		products = self.parseMemberTable(self.getMemberTable(), suscribed, observed)
 		self.update(products)
 		self.log("Done")
 		return products
