@@ -56,15 +56,19 @@ class BalancedConsumerHandler(ConsumerHandler):
 
     def member_join(self, payload):
         self.handleMembershipChange(self.getRenderer())
+        # trigger haproxy reload
 
     def member_update(self, payload):
         self.handleMembershipChange(self.getRenderer())
+        # trigger haproxy reload
 
     def member_leave(self, payload):
         self.handleMembershipChange(self.getRenderer())
+        # trigger haproxy reload
 
     def member_failed(self, payload):
         self.handleMembershipChange(self.getRenderer())
+        # trigger haproxy reload
 
 
 class ConfigHandler(SerfHandler):

@@ -17,39 +17,99 @@ class Base(object):
 		self.logger.debug(product)
 
 
+class EtcHostsRenderer(Base):
+	def __init__(self, configDir):
+		super(EtcHostsRenderer, self).__init__(configDir)
+		self.fp = open("/tmp/fakehosts_updating.txt", "w")
+
+	def printProduct(self, product):
+		pass
+
+	def printService(self, product, service, nodes):
+		size = len(nodes)
+		for x in range(4):
+			print>>self.fp, nodes[x % size]["addr"] + "\tsvc-" + product + "-" + service + "-" + str(x)
+
+	def close(self):
+		self.fp.close()
+		os.system("mv /tmp/fakehosts_updating.txt %sfakehosts.txt" % self.configDir)
+
+
+class YamlServiceRenderer(Base):
+	def __init__(self, configDir):
+		super(YamlServiceRenderer, self).__init__(configDir)
+		self.fp = open("/tmp/services_updating.yml", "w")
+
+	def printProduct(self, product):
+		print>>self.fp, product + " :"
+
+	def printService(self, product, service, nodes):
+		print>>self.fp, "    " + service + " :"
+		for n in nodes:
+			print>>self.fp, "        - name : " + n["name"]
+			print>>self.fp, "          port : " + str(n["port"])
+			print>>self.fp, "          addr : " + n["addr"]
+
+	def close(self):
+		self.fp.close()
+		os.system("mv /tmp/services_updating.yml %sservices.yml" % self.configDir)
+
+
+class HAProxyConfigRenderer(Base):
+	def __init__(self, configDir):
+		super(HAProxyConfigRenderer, self).__init__(configDir)
+		self.fp = {}
+
+	def printProduct(self, product):
+		self.fp[product] = open("/tmp/haproxy_%s_updating.cnf" % product, "w")
+
+	def printService(self, product, service, nodes):
+		print>>self.fp[product], service + " :"
+		for n in nodes:
+			print>>self.fp[product], "    - name : " + n["name"]
+			print>>self.fp[product], "      port : " + str(n["port"])
+			print>>self.fp[product], "      addr : " + n["addr"]
+
+	def close(self):
+		for p in self.fp:
+			self.fp[p].close()
+			os.system("mv /tmp/haproxy_%s_updating.cnf %shaproxy_%s.cnf" % (p, self.configDir, p))
+
+
 class SimpleRenderer(Base):
-	def render(self, products):
+	def getRenderers(self):
+		return [EtcHostsRenderer(self.configDir), YamlServiceRenderer(self.configDir)]
+
+	def doRender(self, products, renderers):
 		self.log("Writing new config files...")
 		self.trace(str(products))
 		cfp = open("/tmp/services_updating.json", "w")
-		hfp = open("/tmp/fakehosts_updating.txt", "w")
-		sfp = open("/tmp/services_updating.yml", "w")
 		print>>cfp, json.dumps(products, sort_keys=True, indent=4, separators=(',', ': '))
 		for p in products:
-			print>>sfp, p + " :"
+			for r in renderers:
+				r.printProduct(p)
 			services = products[p]
 			for s in services:
-				node = services[s]
-				size = len(node)
-				for x in range(4): print>>hfp, node[x % size]["addr"] + "\tsvc-" + p + "-" + s + "-" + str(x)
-				print>>sfp, "    " + s + " :"
-				for n in node:
-					print>>sfp, "        - name : " + n["name"]
-					print>>sfp, "          port : " + str(n["port"])
-					print>>sfp, "          addr : " + n["addr"]
+				for r in renderers:
+					r.printService(p, s, services[s])
 		self.log("Replacing the old set of config files with the fresh one...")
-		sfp.close()
-		hfp.close()
+		for r in renderers:
+			r.close()
 		cfp.close()
-		os.system("mv /tmp/fakehosts_updating.txt %sfakehosts.txt" % self.configDir)
-		os.system("mv /tmp/services_updating.yml %sservices.yml" % self.configDir)
 		os.system("mv /tmp/services_updating.json %sservices.json" % self.configDir)
+
+	def render(self, products):
+		self.doRender(products, self.getRenderers())
 
 
 class HAProxyRenderer(SimpleRenderer):
+	def getRenderers(self):
+		renderers = super(HAProxyRenderer, self).getRenderers()
+		renderers.append(HAProxyConfigRenderer(self.configDir))
+		return renderers
+
 	def render(self, products):
-		super(HAProxyRenderer, self).render(products)
-		print "update the haproxy config file!"
+		self.doRender(products, self.getRenderers())
 
 
 class Members(Base):
