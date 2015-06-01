@@ -29,26 +29,42 @@ class ConsumerHandler(SerfHandler):
         super(ConsumerHandler, self).__init__()
         self.observed = observed
         self.configDir = configDir
+        self.suscribed = (os.environ['SERF_TAG_PRODUCTS']).split(":")
 
-    def handleMembershipChange(self):
-        members_handler = members.Members(self.configDir)
-        members_handler.run()
+    def handleMembershipChange(self, renderer):
+        members.Members(renderer, self.configDir).run(self.suscribed, self.observed)
+
+    def getRenderer(self):
+        return members.SimpleRenderer(self.configDir)
 
     def member_join(self, payload):
-        # self.log("NEW MEMBER HAS JOINED THE PARTY! " + payload)
-        self.handleMembershipChange()
+        self.handleMembershipChange(self.getRenderer())
 
     def member_update(self, payload):
-        # self.log("A MEMBER HAS UPDATED ITS STATE! " + payload)
-        self.handleMembershipChange()
+        self.handleMembershipChange(self.getRenderer())
 
     def member_leave(self, payload):
-        # self.log("A MEMBER HAS LEAVE THE PARTY! " + payload)
-        self.handleMembershipChange()
+        self.handleMembershipChange(self.getRenderer())
 
     def member_failed(self, payload):
-        # self.log("A MEMBER HAS FAILED! " + payload)
-        self.handleMembershipChange()
+        self.handleMembershipChange(self.getRenderer())
+
+
+class BalancedConsumerHandler(ConsumerHandler):
+    def getRenderer(self):
+        return members.HAProxyRenderer(self.configDir)
+
+    def member_join(self, payload):
+        self.handleMembershipChange(self.getRenderer())
+
+    def member_update(self, payload):
+        self.handleMembershipChange(self.getRenderer())
+
+    def member_leave(self, payload):
+        self.handleMembershipChange(self.getRenderer())
+
+    def member_failed(self, payload):
+        self.handleMembershipChange(self.getRenderer())
 
 
 class ConfigHandler(SerfHandler):

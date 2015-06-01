@@ -4,7 +4,7 @@ import os
 import logging
 import json
 
-class Members(object):
+class Base(object):
 	def __init__(self, configDir):
 		self.products = {}
 		self.logger = logging.getLogger(type(self).__name__)
@@ -16,30 +16,8 @@ class Members(object):
 	def trace(self, product):
 		self.logger.debug(product)
 
-	def getMemberTable(self):
-		self.log("Parsing the members table")
-		handle = os.popen("serf members -format=json")
-		# handle = open("fixtures/serf_members_fake.json", "r")
-		members = json.load(handle)
-		return members["members"]
-		
-	def parseMemberTable(self, members):
-		products = {}
-		for member in members:
-			if (member["status"] == "alive"):
-				host = member["addr"].split(":")
-				name = member["name"]
-				productsInNode = member["tags"]["products"].split(":")
-				for p in productsInNode:
-					product = products.get(p, {})
-					services = member["tags"][p + ".service_type"].split(":")
-					for s in services:
-						nodes = product.get(s, [])
-						nodes.append({ 'addr' : host[0], 'port' : int(member["tags"][p + "." + s + ".service_port"]), 'name' : name })
-						product[s] = nodes
-					products[p] = product
-		return products
 
+class SimpleRenderer(Base):
 	def render(self, products):
 		self.log("Writing new config files...")
 		self.trace(str(products))
@@ -67,6 +45,42 @@ class Members(object):
 		os.system("mv /tmp/services_updating.yml %sservices.yml" % self.configDir)
 		os.system("mv /tmp/services_updating.json %sservices.json" % self.configDir)
 
+
+class HAProxyRenderer(SimpleRenderer):
+	def render(self, products):
+		super(HAProxyRenderer, self).render(products)
+		print "update the haproxy config file!"
+
+
+class Members(Base):
+	def __init__(self, renderer, configDir):
+		super(Members, self).__init__(configDir)
+		self.renderer = renderer
+
+	def getMemberTable(self):
+		self.log("Parsing the members table")
+		handle = os.popen("serf members -format=json")
+		# handle = open("fixtures/serf_members_fake.json", "r")
+		members = json.load(handle)
+		return members["members"]
+
+	def parseMemberTable(self, members):
+		products = {}
+		for member in members:
+			if (member["status"] == "alive"):
+				host = member["addr"].split(":")
+				name = member["name"]
+				productsInNode = member["tags"]["products"].split(":")
+				for p in productsInNode:
+					product = products.get(p, {})
+					services = member["tags"][p + ".service_type"].split(":")
+					for s in services:
+						nodes = product.get(s, [])
+						nodes.append({ 'addr' : host[0], 'port' : int(member["tags"][p + "." + s + ".service_port"]), 'name' : name })
+						product[s] = nodes
+					products[p] = product
+		return products
+
 	def update(self, products):
 		mustUpdate = False
 		try:
@@ -78,15 +92,28 @@ class Members(object):
 			mustUpdate = True
 
 		if (mustUpdate):
-			self.render(products)
+			self.renderer.render(products)
 		else:
 			self.log("Nothing to update")
+		return products
 
-	def run(self):
+	def filterCatalogue(self, catalogue, suscribed, observed):
+		products = { p: catalogue[p] for p in suscribed }
+		for p in observed:
+			if p in catalogue:
+				if "public" in catalogue[p]:
+					products[p] = { "public": catalogue[p]["public"] }
+		return products
+
+
+	def run(self, suscribed, observed):
 		self.log("Checking the membership table")
-		self.update(self.parseMemberTable(self.getMemberTable()))
+		products = self.filterCatalogue(self.parseMemberTable(self.getMemberTable()), suscribed, observed)
+		self.update(products)
 		self.log("Done")
+		return products
 
 if __name__ == '__main__':
-	members_handler = Members("conf/")
+	configDir = "conf/"
+	members_handler = Members(SimpleRenderer(configDir), configDir)
 	members_handler.run()
