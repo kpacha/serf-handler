@@ -103,13 +103,10 @@ class SimpleRenderer(Base):
 
 
 class HAProxyRenderer(SimpleRenderer):
-	def getRenderers(self):
-		renderers = super(HAProxyRenderer, self).getRenderers()
-		renderers.append(HAProxyConfigRenderer(self.configDir))
-		return renderers
-
 	def render(self, products):
-		self.doRender(products, self.getRenderers())
+		renderers = self.getRenderers()
+		renderers.append(HAProxyConfigRenderer(self.configDir))
+		self.doRender(products, renderers)
 
 
 class Members(Base):
