@@ -1,5 +1,8 @@
 product4 :
     public :
+        - name : test11
+          port : 80
+          addr : 192.168.1.246
         - name : test13
           port : 80
           addr : 192.168.1.248

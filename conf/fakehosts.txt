@@ -1,6 +1,6 @@
-192.168.1.248	svc-product4-public-0
+192.168.1.246	svc-product4-public-0
 192.168.1.248	svc-product4-public-1
-192.168.1.248	svc-product4-public-2
+192.168.1.246	svc-product4-public-2
 192.168.1.248	svc-product4-public-3
 192.168.1.246	svc-product3-public-0
 192.168.1.246	svc-product3-public-1

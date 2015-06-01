@@ -196,31 +196,16 @@
 		}
 	},
 	{
-		"name": "failed",
-		"addr": "192.168.1.236:7946",
-		"port": 7946,
-		"tags": {
-			"role": "public",
-			"products": "product2",
-			"product2.service_type": "public",
-			"product2.public.service_port": "80"
-		},
-		"status": "failed",
-		"protocol": {
-			"max": 4,
-			"min": 2,
-			"version": 4
-		}
-	},
-	{
 		"name": "test11",
 		"addr": "192.168.1.246:7946",
 		"port": 7946,
 		"tags": {
 			"role": "public",
-			"products": "product2:product1:product3",
+			"products": "product2:product1:product3:product4",
 			"product2.service_type": "public",
 			"product2.public.service_port": "80",
+			"product4.service_type": "public",
+			"product4.public.service_port": "80",
 			"product3.service_type": "public",
 			"product3.public.service_port": "80",
 			"product1.service_type": "public",

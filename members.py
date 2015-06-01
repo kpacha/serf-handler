@@ -57,32 +57,31 @@ class Members(Base):
 		super(Members, self).__init__(configDir)
 		self.renderer = renderer
 
-	def getMemberTable(self):
+	def getMemberTable(self,  products):
 		self.log("Parsing the members table")
-		handle = os.popen("serf members -format=json")
+		handle = os.popen("serf members -format=json -status=alive -tag products='.*(%s).*'" % "|".join(products))
 		# handle = open("fixtures/serf_members_fake.json", "r")
 		members = json.load(handle)
 		return members["members"]
 
-	def parseMemberTable(self, members, suscribed, observed):
+	def parseMemberTable(self, members, observed, collaborators):
 		products = {}
 		for member in members:
-			if (member["status"] == "alive"):
-				host = member["addr"].split(":")
-				name = member["name"]
-				productsInNode = member["tags"]["products"].split(":")
-				for p in productsInNode:
-					if p in (suscribed + observed):
-						product = products.get(p, {})
-						services = member["tags"][p + ".service_type"].split(":")
-						for s in services:
-							if p not in suscribed:
-								if s != "public":
-									continue
-							nodes = product.get(s, [])
-							nodes.append({ 'addr' : host[0], 'port' : int(member["tags"][p + "." + s + ".service_port"]), 'name' : name })
-							product[s] = nodes
-						products[p] = product
+			host = member["addr"].split(":")
+			name = member["name"]
+			productsInNode = member["tags"]["products"].split(":")
+			for p in productsInNode:
+				if p not in observed:
+					continue
+				product = products.get(p, {})
+				services = member["tags"][p + ".service_type"].split(":")
+				for s in services:
+					if p in collaborators and s != "public":
+						continue
+					nodes = product.get(s, [])
+					nodes.append({ 'addr': host[0], 'port': int(member["tags"][p + "." + s + ".service_port"]), 'name': name })
+					product[s] = nodes
+				products[p] = product
 		return products
 
 	def update(self, products):
@@ -103,7 +102,9 @@ class Members(Base):
 
 	def run(self, suscribed, observed):
 		self.log("Checking the membership table")
-		products = self.parseMemberTable(self.getMemberTable(), suscribed, observed)
+		union = list(set(suscribed + observed))
+		diff = list(set(observed) - set(suscribed))
+		products = self.parseMemberTable(self.getMemberTable(union), union, diff)
 		self.update(products)
 		self.log("Done")
 		return products
