@@ -232,6 +232,44 @@
 			"min": 2,
 			"version": 4
 		}
+	},
+	{
+		"name": "test12",
+		"addr": "192.168.1.247:7946",
+		"port": 7946,
+		"tags": {
+			"role": "web",
+			"products": "product3:product4",
+			"product3.service_type": "web",
+			"product3.web.service_port": "8080",
+			"product4.service_type": "web",
+			"product4.web.service_port": "8081"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
+	},
+	{
+		"name": "test13",
+		"addr": "192.168.1.248:7946",
+		"port": 7946,
+		"tags": {
+			"role": "web",
+			"products": "product5:product4",
+			"product5.service_type": "public",
+			"product5.public.service_port": "80",
+			"product4.service_type": "public",
+			"product4.public.service_port": "80"
+		},
+		"status": "alive",
+		"protocol": {
+			"max": 4,
+			"min": 2,
+			"version": 4
+		}
 	}
 ]
 }
